@@ -1,5 +1,5 @@
 # mysql.py
-import MySQLdb
+import pymysql
 from dotenv import load_dotenv
 import os
 
@@ -13,7 +13,7 @@ def execute_query(query, params=None):
     db_pass = os.getenv('DB_PASS')
     db_name = os.getenv('DB_NAME')
 
-    conn = MySQLdb.connect(
+    conn = pymysql.connect(
         host=db_host,
         user=db_user,
         passwd=db_pass,
@@ -35,7 +35,7 @@ def execute_query(query, params=None):
             # INSERT/UPDATE/DELETE 쿼리의 경우
             conn.commit()  # 트랜잭션 커밋
             return cursor.rowcount  # 영향을 받은 행의 수 반환
-    except MySQLdb.Error as e:
+    except pymysql.Error as e:
         # MySQL 관련 에러 처리
         print(f"MySQL 에러 발생: {e}")
         raise  # 에러를 다시 호출자에게 전달

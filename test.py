@@ -1,5 +1,5 @@
 # test.py
-import MySQLdb
+import pymysql
 import os
 
 from sql.mysql import execute_query
@@ -77,7 +77,7 @@ try:
         columns, rows = result
     else:  # INSERT/UPDATE/DELETE 쿼리
         print(f"쿼리 실행 성공! 영향을 받은 행의 수: {result}")
-except MySQLdb.Error as e:
+except pymysql.Error as e:
     print(f"MySQL 실행 에러: {e}")
 except Exception as e:
     print(f"일반 에러: {e}")    
