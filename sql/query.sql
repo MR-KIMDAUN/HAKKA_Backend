@@ -47,3 +47,48 @@ select *
     from tb_mokkoji_info a
     left join tb_user_info b
     on a.reg_id = b.user_id;
+
+-- Query: insert Place_info
+insert into tb_place_info (
+        place_uuid, 
+        mokkoji_uuid,
+        place_cd,
+        place_name,
+        place_addr,
+        place_explain,
+        place_profile, 
+        use_yn,
+        reg_id, 
+        reg_dt, 
+        chg_id, 
+        chg_dt,
+        place_url 
+    ) value (
+        %s, 
+        %s, 
+        %s,
+        %s, 
+        %s, 
+        %s, 
+        %s,
+        %s, 
+        %s, 
+        now(), 
+        %s,
+        now(),
+        %s 
+    );
+    
+-- Query: select place_info
+select
+	mokkoji_uuid,
+	place_name,
+	place_addr,
+	place_explain,
+	place_profile,
+	place_url,
+	reg_id,
+	reg_dt 
+from hakka.tb_place_info
+where mokkoji_uuid = '1'
+order by reg_dt asc;

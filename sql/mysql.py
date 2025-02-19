@@ -3,9 +3,11 @@ import pymysql
 from dotenv import load_dotenv
 import os
 
+env_path = os.path.join(os.path.dirname(__file__), "..", ".env")
+load_dotenv(env_path)
 load_dotenv()
 
-def execute_query(query, params=None):
+def execute_query(query, params=None, multiple=False):
     # MySQL 서버 연결
     # 환경 변수 사용
     db_host = os.getenv('DB_HOST')
@@ -21,28 +23,22 @@ def execute_query(query, params=None):
     )
     try:
         cursor = conn.cursor()
-        if params:
-            cursor.execute(query, params)  # 파라미터 바인딩
+        
+        if multiple:
+            cursor.executemany(query, params)  # 여러 개의 데이터 한 번에 삽입
         else:
-            cursor.execute(query)
-            
+            cursor.execute(query, params)
+
         if query.strip().lower().startswith("select"):
-            # SELECT 쿼리의 경우
-            columns = [desc[0] for desc in cursor.description]
-            result = cursor.fetchall()
-            return columns, result
+            columns = [desc[0] for desc in cursor.description]  # 컬럼명 가져오기
+            rows = cursor.fetchall()  # 데이터 가져오기
+            print(f" SELECT 실행 결과: {rows}")  # 결과 확인
+            return columns, rows  # 튜플 반환 (columns, rows)
+
         else:
-            # INSERT/UPDATE/DELETE 쿼리의 경우
-            conn.commit()  # 트랜잭션 커밋
-            return cursor.rowcount  # 영향을 받은 행의 수 반환
-    except pymysql.Error as e:
-        # MySQL 관련 에러 처리
-        print(f"MySQL 에러 발생: {e}")
-        raise  # 에러를 다시 호출자에게 전달
-    except Exception as e:
-        # 일반 에러 처리
-        print(f"알 수 없는 에러 발생: {e}")
-        raise
+            conn.commit()
+            return cursor.rowcount
     finally:
         cursor.close()
         conn.close()
+        
